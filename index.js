@@ -16,14 +16,21 @@ function FileStore(config){
 
 // fetch a file from cache
 // @return instance of stream.Readable
-FileStore.prototype.fetch = function fetch(engineId, hash, timestamp) {
-	return fs.createReadStream(this.config.path + '/' + [engineId, hash, timestamp].join(':') );
+FileStore.prototype.fetch = function fetch(hash, timestamp) {
+	var s = fs.createReadStream(this.config.path + '/' + [hash, timestamp].join(':') )
+
+	// TODO: get metadata from mmmagic
+	setImmediate(function(){
+		s.emit('metadata', {});
+	});
+
+	return s;
 };
 
 // save a file to cache
 // @return instance of stream.Writable
-FileStore.prototype.save = function save(engineId, hash, timestamp, ttl) {
-	return fs.createWriteStream(this.config.path + '/' + [engineId, hash, timestamp].join(':') );
+FileStore.prototype.save = function save(hash, timestamp, metadata, ttl) {
+	return fs.createWriteStream(this.config.path + '/' + [hash, timestamp].join(':') );
 };
 
 module.exports = FileStore;
